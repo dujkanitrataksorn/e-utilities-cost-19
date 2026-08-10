@@ -27,6 +27,24 @@ test.before(async () => {
   await setupDatabase();
 });
 
+test('register creates a new user account', async () => {
+  const response = await request(app)
+    .post('/api/auth/register')
+    .send({
+      username: 'newuser',
+      password: 'newPassword123',
+      full_name: 'New User',
+    })
+    .expect(201);
+
+  assert.equal(response.body.user.username, 'newuser');
+  assert.equal(response.body.user.role, 'staff');
+
+  const saved = await User.findOne({ where: { username: 'newuser' } });
+  assert.ok(saved);
+  assert.notEqual(saved.password, 'newPassword123');
+});
+
 test('forgot password returns a generic success response and creates a reset token', async () => {
   const response = await request(app)
     .post('/api/auth/forgot-password')

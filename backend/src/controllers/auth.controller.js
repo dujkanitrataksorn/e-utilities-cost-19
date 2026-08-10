@@ -26,6 +26,46 @@ const cookieOptions = {
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
+// POST /api/auth/register
+exports.register = async (req, res, next) => {
+  try {
+    const { username, password, full_name } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'กรุณากรอก username และ password' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร' });
+    }
+
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
+      return res.status(409).json({ message: 'username นี้ถูกใช้งานแล้ว' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      username,
+      password: hashedPassword,
+      full_name: full_name || null,
+      role: 'staff',
+    });
+
+    return res.status(201).json({
+      message: 'สมัครสมาชิกสำเร็จ',
+      user: {
+        id: user.id,
+        username: user.username,
+        full_name: user.full_name,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // POST /api/auth/login
 exports.login = async (req, res, next) => {
   try {
