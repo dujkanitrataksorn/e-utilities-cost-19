@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User, PasswordResetToken } = require('../models');
 
 function signAccessToken(user) {
   return jwt.sign(
@@ -55,6 +56,82 @@ exports.login = async (req, res, next) => {
         full_name: user.full_name,
         role: user.role,
       },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/auth/forgot-password
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { username } = req.body;
+    if (!username) {
+      return res.status(400).json({ message: 'กรุณากรอก username' });
+    }
+
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+      return res.status(200).json({
+        message: 'หาก username นี้มีอยู่ในระบบ ระบบจะส่งลิงก์ตั้งรหัสผ่านใหม่ให้ทันที',
+      });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    await PasswordResetToken.create({
+      user_id: user.id,
+      token,
+      expires_at: expiresAt,
+    });
+
+    console.log(`Password reset token for ${user.username}: ${token}`);
+
+    return res.status(200).json({
+      message: 'หาก username นี้มีอยู่ในระบบ ระบบจะส่งลิงก์ตั้งรหัสผ่านใหม่ให้ทันที',
+      token,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/auth/reset-password
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: 'กรุณากรอก token และรหัสผ่านใหม่' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'รหัสผ่านใหม่ต้องมีความยาวอย่างน้อย 8 ตัวอักษร' });
+    }
+
+    const resetRecord = await PasswordResetToken.findOne({
+      where: {
+        token,
+        used_at: null,
+      },
+      include: [{ model: User, as: 'user' }],
+    });
+
+    if (!resetRecord) {
+      return res.status(400).json({ message: 'token ไม่ถูกต้องหรือหมดอายุแล้ว' });
+    }
+
+    if (new Date(resetRecord.expires_at) < new Date()) {
+      return res.status(400).json({ message: 'token ไม่ถูกต้องหรือหมดอายุแล้ว' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await resetRecord.user.update({ password: hashedPassword });
+    await resetRecord.update({ used_at: new Date() });
+
+    return res.status(200).json({
+      message: 'ตั้งรหัสผ่านใหม่สำเร็จ กรุณาเข้าสู่ระบบอีกครั้ง',
     });
   } catch (err) {
     next(err);

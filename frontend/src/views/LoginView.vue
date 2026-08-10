@@ -54,6 +54,12 @@ async function handleSubmit() {
 
         <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
 
+        <div class="text-right">
+          <router-link :to="{ name: 'forgot-password' }" class="text-sm text-primary-600 hover:underline">
+            ลืมรหัสผ่าน?
+          </router-link>
+        </div>
+
         <button
           type="submit"
           :disabled="loading"

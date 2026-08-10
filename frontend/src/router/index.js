@@ -3,6 +3,8 @@ import { useAuthStore } from '../stores/auth';
 
 const routes = [
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue'), meta: { public: true } },
+  { path: '/forgot-password', name: 'forgot-password', component: () => import('../views/ForgotPasswordView.vue'), meta: { public: true } },
+  { path: '/reset-password', name: 'reset-password', component: () => import('../views/ResetPasswordView.vue'), meta: { public: true } },
   { path: '/', name: 'dashboard', component: () => import('../views/DashboardView.vue') },
   { path: '/expenses', name: 'expense-list', component: () => import('../views/ExpenseListView.vue') },
   { path: '/expenses/create', name: 'expense-create', component: () => import('../views/ExpenseFormView.vue') },
