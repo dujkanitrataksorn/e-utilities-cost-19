@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Sarabun', 'Segoe UI', sans-serif;
+  @apply bg-gray-50 text-gray-800;
+}
+
+/* helper: card list pattern สำหรับตารางบนมือถือ */
+.table-desktop {
+  @apply hidden md:table;
+}
+.card-mobile {
+  @apply block md:hidden;
+}
