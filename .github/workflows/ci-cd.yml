@@ -9,9 +9,32 @@ on:
 jobs:
   backend-test:
     runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MYSQL_ROOT_PASSWORD: changeme_root
+          MYSQL_DATABASE: e_utilities_cost
+          MYSQL_USER: app_user
+          MYSQL_PASSWORD: changeme
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pchangeme_root --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     defaults:
       run:
         working-directory: ./backend
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_NAME: e_utilities_cost
+      DB_USER: app_user
+      DB_PASSWORD: changeme
+      JWT_SECRET: test_secret
+      REFRESH_TOKEN_SECRET: test_refresh_secret
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
