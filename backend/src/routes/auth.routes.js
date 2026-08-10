@@ -11,7 +11,10 @@ const loginLimiter = rateLimit({
   message: { message: 'พยายามเข้าสู่ระบบบ่อยเกินไป กรุณาลองใหม่ภายหลัง' },
 });
 
+router.post('/register', authController.register);
 router.post('/login', loginLimiter, authController.login);
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/reset-password', authController.resetPassword);
 router.post('/logout', authController.logout);
 router.post('/refresh', authController.refresh);
 router.get('/me', authenticate, authController.me);
