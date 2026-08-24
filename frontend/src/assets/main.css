@@ -2,9 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color: #0f172a;
+  background-color: #f8fbff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Sarabun', 'Segoe UI', sans-serif;
-  @apply bg-gray-50 text-gray-800;
+  @apply bg-slate-100 text-slate-800;
+}
+
+#app-root {
+  min-height: 100vh;
+}
+
+.login-shell {
+  background:
+    radial-gradient(circle at top left, rgba(147, 197, 253, 0.45), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(191, 219, 254, 0.6), transparent 30%),
+    linear-gradient(135deg, #eff6ff 0%, #f8fafc 38%, #eef2ff 100%);
+}
+
+.login-card {
+  border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 /* helper: card list pattern สำหรับตารางบนมือถือ */

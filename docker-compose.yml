@@ -1,6 +1,7 @@
 services:
   mariadb:
     image: mariadb:11
+    container_name: dawin-mariadb
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
@@ -8,28 +9,32 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - mariadb_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+      - dawin_mariadb_data:/var/lib/mysql
+    networks:
+      - dawin-net
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 5
+    # ไม่ publish port ออกไป - เข้าถึงผ่าน network ภายในเท่านั้น
 
   phpmyadmin:
     image: phpmyadmin:latest
+    container_name: dawin-phpmyadmin
     restart: unless-stopped
     environment:
       PMA_HOST: mariadb
-    ports:
-      - "8081:80"
     depends_on:
       - mariadb
+    networks:
+      - dawin-net
+    # ไม่ publish port ออกไป - ถ้าจะใช้ ให้ SSH tunnel เข้ามาแทน
 
   backend:
     build: ./backend
-    image: ${DOCKERHUB_USERNAME:-yourname}/e-utilities-cost-backend:latest
+    image: ${DOCKERHUB_USERNAME}/e-utilities-cost-backend:latest
+    container_name: dawin-backend
     restart: unless-stopped
     environment:
       DB_HOST: mariadb
@@ -43,21 +48,30 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
       REFRESH_TOKEN_EXPIRES_IN: ${REFRESH_TOKEN_EXPIRES_IN:-7d}
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:8080}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
     ports:
-      - "3000:3000"
+      - "30050:3000"
     depends_on:
       mariadb:
         condition: service_healthy
+    networks:
+      - dawin-net
 
   frontend:
     build: ./frontend
-    image: ${DOCKERHUB_USERNAME:-yourname}/e-utilities-cost-frontend:latest
+    image: ${DOCKERHUB_USERNAME}/e-utilities-cost-frontend:latest
+    container_name: dawin-frontend
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "30049:80"
     depends_on:
       - backend
+    networks:
+      - dawin-net
+
+networks:
+  dawin-net:
+    name: dawin-net
 
 volumes:
-  mariadb_data:
+  dawin_mariadb_data:
