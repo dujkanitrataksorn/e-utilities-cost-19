@@ -32,20 +32,29 @@ async function seedDatabase() {
   }
   console.log('✅ Seed budget_categories เรียบร้อย');
 
-  const adminExists = await User.findOne({ where: { username: 'admin' } });
-  if (!adminExists) {
-    const hashed = await bcrypt.hash('admin1234', 10);
-    await User.create({
+  const hashed = await bcrypt.hash('admin1234', 10);
+  const [adminUser, created] = await User.findOrCreate({
+    where: { username: 'admin' },
+    defaults: {
       username: 'admin',
       password: hashed,
       full_name: 'ผู้ดูแลระบบ',
       role: 'admin',
+    },
+  });
+
+  if (!created) {
+    await adminUser.update({
+      password: hashed,
+      full_name: 'ผู้ดูแลระบบ',
+      role: 'admin',
     });
-    console.log('✅ สร้างผู้ใช้ admin เรียบร้อย (username: admin / password: admin1234)');
-    console.log('⚠️  กรุณาเปลี่ยนรหัสผ่านทันทีหลัง login ครั้งแรก');
+    console.log('ℹ️  ปรับข้อมูลผู้ใช้ admin ให้ตรงกับค่าเริ่มต้นเริ่มต้นแล้ว');
   } else {
-    console.log('ℹ️  มีผู้ใช้ admin อยู่แล้ว ข้ามการสร้าง');
+    console.log('✅ สร้างผู้ใช้ admin เรียบร้อย (username: admin / password: admin1234)');
   }
+
+  console.log('⚠️  กรุณาเปลี่ยนรหัสผ่านทันทีหลัง login ครั้งแรก');
 
   console.log('🎉 Seed ข้อมูลเสร็จสมบูรณ์');
 }

@@ -1,7 +1,21 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const defaultApiBaseUrl = (() => {
+  const { hostname, port } = window.location;
+
+  if (hostname === 'localhost' && port === '5173') {
+    return 'http://localhost:3000/api';
+  }
+
+  if (hostname === 'localhost' && (port === '8080' || port === '30049')) {
+    return 'http://localhost:30050/api';
+  }
+
+  return 'http://localhost:30050/api';
+})();
+
+const baseURL = import.meta.env.VITE_API_BASE_URL || defaultApiBaseUrl;
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({

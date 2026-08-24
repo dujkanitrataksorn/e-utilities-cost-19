@@ -1,0 +1,89 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+env:
+  BACKEND_IMAGE: korarak777/moew-data-888-backend
+  FRONTEND_IMAGE: korarak777/moew-data-888-frontend
+  DEPLOY_PATH: ~/apps/korarak
+  API_URL: http://202.29.231.188:30020/api
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ env.BACKEND_IMAGE }}:latest
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          build-args: |
+            VITE_API_BASE_URL=${{ env.API_URL }}
+          tags: ${{ env.FRONTEND_IMAGE }}:latest
+
+      - name: Ensure deploy folder exists
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: mkdir -p ${{ env.DEPLOY_PATH }}
+
+      - name: Copy compose file to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml"
+          target: ${{ env.DEPLOY_PATH }}
+
+      - name: Deploy app over SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ env.DEPLOY_PATH }}
+
+            cat > .env <<EOF
+            DB_NAME=e_utilities_cost
+            DB_USER=app_user
+            DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}
+            DB_ROOT_PASSWORD=${{ secrets.PROD_DB_ROOT_PASSWORD }}
+            JWT_SECRET=${{ secrets.PROD_JWT_SECRET }}
+            JWT_EXPIRES_IN=1h
+            REFRESH_TOKEN_SECRET=${{ secrets.PROD_REFRESH_TOKEN_SECRET }}
+            REFRESH_TOKEN_EXPIRES_IN=7d
+            FRONTEND_ORIGIN=${{ secrets.PROD_FRONTEND_ORIGIN }}
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            EOF
+
+            docker compose -f docker-compose.yml pull
+            docker compose -f docker-compose.yml up -d --remove-orphans
+            docker compose -f docker-compose.yml ps
