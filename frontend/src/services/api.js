@@ -1,8 +1,22 @@
 import axios from 'axios';
 import { useAuthStore } from '../stores/auth';
 
+const defaultApiBaseUrl = (() => {
+  const { hostname, port } = window.location;
+
+  if (hostname === 'localhost' && port === '5173') {
+    return 'http://localhost:3000/api';
+  }
+
+  if (hostname === 'localhost' && (port === '8080' || port === '30049')) {
+    return 'http://localhost:30050/api';
+  }
+
+  return 'http://localhost:30050/api';
+})();
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || defaultApiBaseUrl,
   withCredentials: true, // ส่ง httpOnly cookie (refresh token) ไปด้วย
 });
 

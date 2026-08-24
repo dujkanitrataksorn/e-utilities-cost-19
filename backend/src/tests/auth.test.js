@@ -45,6 +45,21 @@ test('register creates a new user account', async () => {
   assert.notEqual(saved.password, 'newPassword123');
 });
 
+test('register accepts requests from frontend dev origins', async () => {
+  const response = await request(app)
+    .post('/api/auth/register')
+    .set('Origin', 'http://localhost:5173')
+    .send({
+      username: 'devoriginuser',
+      password: 'devPassword123',
+      full_name: 'Dev Origin User',
+    })
+    .expect(201);
+
+  assert.equal(response.headers['access-control-allow-origin'], 'http://localhost:5173');
+  assert.equal(response.body.user.username, 'devoriginuser');
+});
+
 test('forgot password returns a generic success response and creates a reset token', async () => {
   const response = await request(app)
     .post('/api/auth/forgot-password')
