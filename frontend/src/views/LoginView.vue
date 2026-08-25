@@ -78,7 +78,9 @@ async function handleSubmit() {
             ลืมรหัสผ่าน?
           </router-link>
         </div>
-
+        <div>
+<p class="mt-2 text-sm text-slate-500">เข้าแบบadmin user:admin password:admin1234 </p>
+</div>
         <button
           type="submit"
           :disabled="loading"
