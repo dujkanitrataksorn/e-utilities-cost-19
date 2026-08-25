@@ -8,11 +8,7 @@ const defaultApiBaseUrl = (() => {
     return 'http://localhost:3000/api';
   }
 
-  if (hostname === 'localhost' && (port === '8080' || port === '30049')) {
-    return 'http://localhost:30050/api';
-  }
-
-  return 'http://localhost:30050/api';
+  return `http://${hostname}:30050/api`;
 })();
 
 const api = axios.create({
@@ -57,6 +53,8 @@ api.interceptors.response.use(
 
     return Promise.reject(error);
   }
+
+  
 );
 
 export default api;
