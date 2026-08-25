@@ -33,7 +33,7 @@ services:
 
   backend:
     build: ./backend
-    image: ${DOCKERHUB_USERNAME}/e-utilities-cost-backend:latest
+    image: ${DOCKERHUB_USERNAME}/moew-data-888-backend:latest
     container_name: dawin-backend
     restart: unless-stopped
     environment:
@@ -59,7 +59,7 @@ services:
 
   frontend:
     build: ./frontend
-    image: ${DOCKERHUB_USERNAME}/e-utilities-cost-frontend:latest
+    image: ${DOCKERHUB_USERNAME}/moew-data-888-frontend:latest
     container_name: dawin-frontend
     restart: unless-stopped
     ports:
