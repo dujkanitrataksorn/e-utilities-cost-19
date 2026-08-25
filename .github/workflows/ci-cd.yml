@@ -87,11 +87,31 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          if [ -z "$DOCKERHUB_USERNAME" ] || [ -z "$DOCKERHUB_TOKEN" ]; then
-            echo "DOCKERHUB_USERNAME or DOCKERHUB_TOKEN is empty. Set both in repo Actions secrets."
+          set -euo pipefail
+          USERNAME=$(printf '%s' "${DOCKERHUB_USERNAME:-}" | tr -d '[:cntrl:]' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^["'\'']//' -e 's/["'\'']$//')
+          TOKEN=$(printf '%s' "${DOCKERHUB_TOKEN:-}" | tr -d '[:cntrl:]' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^["'\'']//' -e 's/["'\'']$//')
+
+          echo "username length=${#USERNAME} token length=${#TOKEN}"
+          if [[ "$USERNAME" == *@* ]]; then
+            echo "ERROR: DOCKERHUB_USERNAME is an email. Set it to the Docker Hub username (korarak777), not the email."
             exit 1
           fi
-          printf '%s' "$DOCKERHUB_TOKEN" | docker login docker.io -u "$DOCKERHUB_USERNAME" --password-stdin
+          if [[ "$USERNAME" == *:* ]]; then
+            echo "ERROR: DOCKERHUB_USERNAME contains a colon, which breaks Basic auth."
+            exit 1
+          fi
+          PREFIX=$(printf '%s' "$TOKEN" | cut -c1-9)
+          echo "token prefix=${PREFIX}"
+          if [[ "$PREFIX" != dckr_pat_ ]]; then
+            echo "WARNING: token does not start with dckr_pat_. Use a Docker Hub Access Token, not the account password or a GitHub token."
+          fi
+          if [ -z "$USERNAME" ] || [ -z "$TOKEN" ]; then
+            echo "DOCKERHUB_USERNAME or DOCKERHUB_TOKEN is empty after trimming."
+            exit 1
+          fi
+
+          docker logout >/dev/null 2>&1 || true
+          printf '%s' "$TOKEN" | docker login -u "$USERNAME" --password-stdin
 
       - name: Build and push backend image
         uses: docker/build-push-action@v6
