@@ -33,7 +33,7 @@ async function handleSubmit() {
         <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-500 text-xl font-bold text-white shadow-lg shadow-blue-500/30">
           E
         </div>
-        <h1 class="text-2xl font-bold tracking-tight text-blue-700 sm:text-[2rem]">ระบบควบคุมค่าสาธารณูปโภค</h1>
+        <h1 class="text-2xl font-bold tracking-tight text-blue-700 sm:text-[2rem]">ระบบควบคุมค่าใช้จ่าย</h1>
         <p class="mt-2 text-sm text-slate-500">เข้าสู่ระบบเพื่อใช้งาน</p>
       </div>
 
