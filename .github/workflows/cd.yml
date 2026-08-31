@@ -106,6 +106,7 @@ jobs:
             JWT_EXPIRES_IN=1h
             REFRESH_TOKEN_SECRET=${{ secrets.PROD_REFRESH_TOKEN_SECRET }}
             REFRESH_TOKEN_EXPIRES_IN=7d
+            COOKIE_SECURE=false
             FRONTEND_ORIGIN=http://202.29.231.188:30049
             DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
             EOF

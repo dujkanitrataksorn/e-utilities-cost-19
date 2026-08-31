@@ -19,10 +19,12 @@ function signRefreshToken(user) {
   );
 }
 
+// secure=true ใช้ได้เฉพาะเมื่อเสิร์ฟผ่าน HTTPS เท่านั้น
+// ถ้าเปิดผ่าน http เบราว์เซอร์จะทิ้ง cookie ทำให้ค้าง session ไม่ได้
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
+  secure: process.env.COOKIE_SECURE === 'true',
+  sameSite: 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 

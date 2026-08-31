@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
@@ -12,6 +12,12 @@ const password = ref('');
 const error = ref('');
 const loading = ref(false);
 
+const registeredUsername = computed(() => route.query.registered || '');
+
+if (registeredUsername.value) {
+  username.value = String(registeredUsername.value);
+}
+
 async function handleSubmit() {
   error.value = '';
   loading.value = true;
@@ -19,7 +25,11 @@ async function handleSubmit() {
     await auth.login(username.value, password.value);
     router.push(route.query.redirect || { name: 'dashboard' });
   } catch (e) {
-    error.value = e.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ';
+    error.value =
+      e.response?.data?.message ||
+      (e.response
+        ? 'เข้าสู่ระบบไม่สำเร็จ'
+        : 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่');
   } finally {
     loading.value = false;
   }
@@ -59,6 +69,13 @@ async function handleSubmit() {
             placeholder="กรอกรหัสผ่าน"
           />
         </div>
+
+        <p
+          v-if="registeredUsername && !error"
+          class="rounded-xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700"
+        >
+          สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบด้วยบัญชี {{ registeredUsername }}
+        </p>
 
         <p v-if="error" class="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
           {{ error }}

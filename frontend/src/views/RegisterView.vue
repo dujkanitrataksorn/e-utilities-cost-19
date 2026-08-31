@@ -193,9 +193,13 @@ async function handleSubmit() {
       full_name: form.fullName,
       password: form.password,
     });
-    router.push('/login');
+    router.push({ name: 'login', query: { registered: form.username } });
   } catch (err) {
-    serverError.value = err.response?.data?.message || 'สมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+    serverError.value =
+      err.response?.data?.message ||
+      (err.response
+        ? 'สมัครสมาชิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'
+        : 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่');
   } finally {
     submitting.value = false;
   }
