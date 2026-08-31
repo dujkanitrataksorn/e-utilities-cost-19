@@ -8,10 +8,30 @@ const store = useCategoryStore();
 
 const isBudget = computed(() => route.name === 'budget-categories');
 const title = computed(() => (isBudget.value ? 'จัดการหมวดเงิน' : 'จัดการประเภทค่าใช้จ่าย'));
+const subtitle = computed(() =>
+  isBudget.value ? 'กำหนดหมวดเงินสำหรับการเบิกจ่าย เช่น งบประมาณ เงินรายได้' : 'กำหนดประเภทของค่าใช้จ่ายสาธารณูปโภค เช่น ค่าไฟ ค่าน้ำ'
+);
 const items = computed(() => (isBudget.value ? store.budgetCategories : store.expenseCategories));
 
 const form = ref({ id: null, name: '', code: '', unit: '', is_active: true });
 const showForm = ref(false);
+
+const typeIcons = {
+  ELEC: '⚡',
+  ENERGY: '🔋',
+  WATER: '💧',
+  INTERNET: '🌐',
+  PHONE: '📞',
+  POST: '📮',
+  WASTE: '🗑️',
+  BUDGET_LV1: '🏛️',
+  BUDGET_LV2: '🎓',
+  SCHOOL_INCOME: '💰',
+};
+
+function iconFor(item) {
+  return typeIcons[item.code] || (isBudget.value ? '🗂️' : '🏷️');
+}
 
 function resetForm() {
   form.value = { id: null, name: '', code: '', unit: '', is_active: true };
@@ -61,39 +81,75 @@ onMounted(load);
 </script>
 
 <template>
-  <div class="space-y-4">
-    <div class="flex items-center justify-between">
-      <h1 class="text-xl font-bold text-gray-800">{{ title }}</h1>
-      <button @click="showForm = !showForm; form = { id: null, name: '', code: '', unit: '', is_active: true }" class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700">
-        + เพิ่มรายการ
+  <div class="space-y-5">
+    <!-- Header -->
+    <div class="flex items-center justify-between flex-wrap gap-3">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800">{{ title }}</h1>
+        <p class="text-sm text-slate-500 mt-0.5">{{ subtitle }}</p>
+      </div>
+      <button @click="showForm = !showForm; form = { id: null, name: '', code: '', unit: '', is_active: true }" class="btn-primary">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        เพิ่มรายการ
       </button>
     </div>
 
-    <form v-if="showForm" @submit.prevent="handleSubmit" class="bg-white rounded-xl shadow-sm p-4 grid grid-cols-2 gap-3">
-      <input v-model="form.name" placeholder="ชื่อ" required class="border rounded-lg px-3 py-2 col-span-2 md:col-span-1" />
-      <input v-model="form.code" placeholder="รหัส" required class="border rounded-lg px-3 py-2 col-span-2 md:col-span-1" />
-      <input v-if="!isBudget" v-model="form.unit" placeholder="หน่วย (เช่น บาท)" class="border rounded-lg px-3 py-2 col-span-2" />
-      <label class="flex items-center gap-2 text-sm col-span-2">
-        <input v-model="form.is_active" type="checkbox" /> เปิดใช้งาน
-      </label>
-      <div class="col-span-2 flex gap-2">
-        <button type="submit" class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm">บันทึก</button>
-        <button type="button" @click="resetForm" class="bg-gray-100 px-4 py-2 rounded-lg text-sm">ยกเลิก</button>
+    <!-- Form -->
+    <form v-if="showForm" @submit.prevent="handleSubmit" class="card p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p class="md:col-span-2 text-sm font-semibold text-slate-700">{{ form.id ? '✏️ แก้ไขรายการ' : '➕ เพิ่มรายการใหม่' }}</p>
+      <div>
+        <label class="form-label">ชื่อ <span class="text-red-500">*</span></label>
+        <input v-model="form.name" placeholder="เช่น ค่าไฟฟ้า" required class="input-field" />
+      </div>
+      <div>
+        <label class="form-label">รหัส <span class="text-red-500">*</span></label>
+        <input v-model="form.code" placeholder="เช่น ELEC" required class="input-field font-mono" />
+      </div>
+      <div v-if="!isBudget">
+        <label class="form-label">หน่วย</label>
+        <input v-model="form.unit" placeholder="เช่น บาท, หน่วย" class="input-field" />
+      </div>
+      <div class="flex items-end">
+        <label class="flex items-center gap-2.5 text-sm text-slate-700 cursor-pointer select-none">
+          <input v-model="form.is_active" type="checkbox" class="w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500" />
+          เปิดใช้งาน
+        </label>
+      </div>
+      <div class="md:col-span-2 flex gap-2">
+        <button type="submit" class="btn-primary">บันทึก</button>
+        <button type="button" @click="resetForm" class="btn-secondary">ยกเลิก</button>
       </div>
     </form>
 
-    <div class="bg-white rounded-xl shadow-sm divide-y">
-      <div v-for="item in items" :key="item.id" class="flex justify-between items-center p-4">
-        <div>
-          <p class="font-medium">{{ item.name }}</p>
-          <p class="text-xs text-gray-500">{{ item.code }} <span v-if="item.unit">· {{ item.unit }}</span> · {{ item.is_active ? 'เปิดใช้งาน' : 'ปิดใช้งาน' }}</p>
+    <!-- Items grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div v-for="item in items" :key="item.id" class="card p-5 flex items-start gap-4 hover:shadow-md transition-shadow">
+        <div class="w-11 h-11 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center text-xl shrink-0">
+          {{ iconFor(item) }}
         </div>
-        <div class="space-x-3 text-sm">
-          <button @click="editItem(item)" class="text-primary-600">แก้ไข</button>
-          <button @click="handleDelete(item.id)" class="text-red-600">ลบ</button>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <p class="font-bold text-slate-800">{{ item.name }}</p>
+            <span :class="item.is_active ? 'badge-success' : 'badge-danger'" class="badge">
+              {{ item.is_active ? 'ใช้งาน' : 'ปิดใช้งาน' }}
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">{{ item.code }}<span v-if="item.unit"> · {{ item.unit }}</span></p>
+          <div class="flex gap-2 mt-3">
+            <button @click="editItem(item)" class="text-primary-600 hover:text-primary-800 text-xs font-semibold px-2.5 py-1 rounded-lg hover:bg-primary-50">แก้ไข</button>
+            <button @click="handleDelete(item.id)" class="text-red-500 hover:text-red-700 text-xs font-semibold px-2.5 py-1 rounded-lg hover:bg-red-50">ลบ</button>
+          </div>
         </div>
       </div>
-      <p v-if="!items.length" class="text-center text-gray-400 py-6">ไม่มีข้อมูล</p>
+    </div>
+
+    <!-- Empty state -->
+    <div v-if="!items.length" class="card p-10 text-center">
+      <p class="text-4xl mb-3">{{ isBudget ? '🗂️' : '🏷️' }}</p>
+      <p class="font-semibold text-slate-700">ยังไม่มีข้อมูล</p>
+      <p class="text-sm text-slate-500 mt-1">กดปุ่ม "เพิ่มรายการ" เพื่อสร้าง{{ title }}รายการแรก</p>
     </div>
   </div>
 </template>
