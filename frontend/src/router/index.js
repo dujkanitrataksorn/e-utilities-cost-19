@@ -12,6 +12,7 @@ const routes = [
   { path: '/expenses/:id/edit', name: 'expense-edit', component: () => import('../views/ExpenseFormView.vue'), props: true },
   { path: '/settings/expense-categories', name: 'expense-categories', component: () => import('../views/CategoryManageView.vue') },
   { path: '/settings/budget-categories', name: 'budget-categories', component: () => import('../views/CategoryManageView.vue') },
+  { path: '/budget-control', name: 'budget-control', component: () => import('../views/BudgetControlView.vue') },
   { path: '/reports', name: 'reports', component: () => import('../views/ReportHistoryView.vue') },
 ];
 
