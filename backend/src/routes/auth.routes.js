@@ -4,10 +4,13 @@ const router = express.Router();
 const authController = require('../controllers/auth.controller');
 const { authenticate } = require('../middlewares/auth.middleware');
 
-// ป้องกัน brute force login: จำกัด 10 ครั้ง / 15 นาที ต่อ IP
+// ป้องกัน brute force login: นับเฉพาะครั้งที่ login ไม่สำเร็จ
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 20,
+  skipSuccessfulRequests: true,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { message: 'พยายามเข้าสู่ระบบบ่อยเกินไป กรุณาลองใหม่ภายหลัง' },
 });
 
