@@ -4,6 +4,7 @@ const ExpenseCategory = require('./expenseCategory.model');
 const BudgetCategory = require('./budgetCategory.model');
 const Expense = require('./expense.model');
 const PasswordResetToken = require('./passwordResetToken.model');
+const BudgetPlan = require('./budgetPlan.model');
 
 // Associations
 User.hasMany(Expense, { foreignKey: 'created_by', as: 'expenses' });
@@ -18,6 +19,9 @@ Expense.belongsTo(ExpenseCategory, { foreignKey: 'expense_category_id', as: 'exp
 BudgetCategory.hasMany(Expense, { foreignKey: 'budget_category_id', as: 'expenses' });
 Expense.belongsTo(BudgetCategory, { foreignKey: 'budget_category_id', as: 'budgetCategory' });
 
+BudgetCategory.hasMany(BudgetPlan, { foreignKey: 'budget_category_id', as: 'budgetPlans' });
+BudgetPlan.belongsTo(BudgetCategory, { foreignKey: 'budget_category_id', as: 'budgetCategory' });
+
 module.exports = {
   sequelize,
   User,
@@ -25,4 +29,5 @@ module.exports = {
   BudgetCategory,
   Expense,
   PasswordResetToken,
+  BudgetPlan,
 };
