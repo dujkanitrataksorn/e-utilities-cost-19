@@ -8,6 +8,7 @@ const authRoutes = require('./routes/auth.routes');
 const categoryRoutes = require('./routes/category.routes');
 const expenseRoutes = require('./routes/expense.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const budgetPlanRoutes = require('./routes/budgetPlan.routes');
 const { errorHandler, notFound } = require('./middlewares/error.middleware');
 
 const app = express();
@@ -45,6 +46,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api', budgetPlanRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
