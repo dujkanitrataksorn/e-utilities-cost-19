@@ -4,7 +4,7 @@
 
 :root {
   color: #0f172a;
-  background-color: #f8fbff;
+  background-color: #f1f5f9;
 }
 
 html {
@@ -13,7 +13,7 @@ html {
 
 body {
   font-family: 'Sarabun', 'Segoe UI', sans-serif;
-  @apply bg-slate-100 text-slate-800;
+  @apply bg-slate-100 text-slate-800 antialiased;
 }
 
 #app-root {
@@ -31,9 +31,65 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
+/* ---------- Shared UI components ---------- */
+
+@layer components {
+  /* การ์ดพื้นฐาน */
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-slate-200/60;
+  }
+
+  /* ปุ่มหลัก */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:bg-primary-700 hover:shadow transition-all active:scale-[0.98];
+  }
+
+  /* ปุ่มรอง */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-all active:scale-[0.98];
+  }
+
+  /* ปุ่มอันตราย */
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 bg-red-500 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm hover:bg-red-600 transition-all active:scale-[0.98];
+  }
+
+  /* input พื้นฐาน */
+  .input-field {
+    @apply w-full border border-slate-300 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition;
+  }
+
+  /* label ของฟอร์ม */
+  .form-label {
+    @apply block text-xs font-semibold text-slate-600 mb-1.5;
+  }
+
+  /* แถบความคืบหน้า (progress bar) */
+  .progress-track {
+    @apply w-full h-2.5 bg-slate-100 rounded-full overflow-hidden;
+  }
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-500;
+  }
+
+  /* badge สถานะ */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold;
+  }
+  .badge-success {
+    @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200;
+  }
+  .badge-warning {
+    @apply bg-amber-50 text-amber-700 ring-1 ring-amber-200;
+  }
+  .badge-danger {
+    @apply bg-red-50 text-red-700 ring-1 ring-red-200;
+  }
+}
+
 /* helper: card list pattern สำหรับตารางบนมือถือ */
 .table-desktop {
-  @apply hidden md:table;
+  @apply hidden md:block;
 }
 .card-mobile {
   @apply block md:hidden;
