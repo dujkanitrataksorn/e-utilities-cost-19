@@ -8,7 +8,7 @@ const defaultApiBaseUrl = (() => {
     return 'http://localhost:3000/api';
   }
 
-  return `http://${hostname}:30050/api`;
+  return `http://${hostname}:30020/api`;
 })();
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || defaultApiBaseUrl;
