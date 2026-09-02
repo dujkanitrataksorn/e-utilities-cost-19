@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../services/api';
+import Logo from '../components/Logo.vue';
 
 const username = ref('');
 const message = ref('');
@@ -42,8 +43,8 @@ function goToResetPage() {
   <div class="login-shell min-h-screen flex items-center justify-center px-4 py-10">
     <div class="login-card w-full max-w-md rounded-[28px] border border-white/60 bg-white/85 p-6 shadow-[0_25px_80px_rgba(37,99,235,0.18)] backdrop-blur-md sm:p-8">
       <div class="mb-7 text-center">
-        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-500 text-xl font-bold text-white shadow-lg shadow-blue-500/30">
-          ?
+        <div class="mx-auto mb-4 flex justify-center">
+          <Logo size="md" />
         </div>
         <h1 class="text-2xl font-bold tracking-tight text-blue-700 sm:text-[2rem]">ลืมรหัสผ่าน</h1>
         <p class="mt-2 text-sm text-slate-500">กรอกชื่อผู้ใช้งานเพื่อรับลิงก์ตั้งรหัสผ่านใหม่</p>

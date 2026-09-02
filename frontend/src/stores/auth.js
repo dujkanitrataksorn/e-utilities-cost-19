@@ -8,7 +8,7 @@ const defaultApiBaseUrl = (() => {
     return 'http://localhost:3000/api';
   }
 
-  return `http://${hostname}:30020/api`;
+  return `http://${hostname}:30050/api`;
 })();
 
 const baseURL = import.meta.env.VITE_API_BASE_URL || defaultApiBaseUrl;
@@ -20,6 +20,8 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
+    isAdmin: (state) => state.user?.role === 'admin',
+    userRole: (state) => state.user?.role,
   },
   actions: {
     async login(username, password) {
@@ -65,6 +67,46 @@ export const useAuthStore = defineStore('auth', {
       }
       this.accessToken = null;
       this.user = null;
+    },
+
+    /**
+     * Admin-only methods
+     */
+    async getAllUsers() {
+      const res = await axios.get(`${baseURL}/admin/users`, {
+        headers: { Authorization: `Bearer ${this.accessToken}` },
+      });
+      return res.data;
+    },
+
+    async getUserById(id) {
+      const res = await axios.get(`${baseURL}/admin/users/${id}`, {
+        headers: { Authorization: `Bearer ${this.accessToken}` },
+      });
+      return res.data;
+    },
+
+    async updateUserRole(id, role) {
+      const res = await axios.put(
+        `${baseURL}/admin/users/${id}/role`,
+        { role },
+        { headers: { Authorization: `Bearer ${this.accessToken}` } }
+      );
+      return res.data;
+    },
+
+    async deleteUser(id) {
+      const res = await axios.delete(`${baseURL}/admin/users/${id}`, {
+        headers: { Authorization: `Bearer ${this.accessToken}` },
+      });
+      return res.data;
+    },
+
+    async getAdminStats() {
+      const res = await axios.get(`${baseURL}/admin/stats`, {
+        headers: { Authorization: `Bearer ${this.accessToken}` },
+      });
+      return res.data;
     },
   },
 });

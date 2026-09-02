@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import Logo from '../components/Logo.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -40,8 +41,8 @@ async function handleSubmit() {
   <div class="login-shell min-h-screen flex items-center justify-center px-4 py-10">
     <div class="login-card w-full max-w-md rounded-[28px] border border-white/60 bg-white/85 p-6 shadow-[0_25px_80px_rgba(37,99,235,0.18)] backdrop-blur-md sm:p-8">
       <div class="mb-7 text-center">
-        <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-500 text-xl font-bold text-white shadow-lg shadow-blue-500/30">
-          E
+        <div class="mx-auto mb-4 flex justify-center">
+          <Logo size="md" />
         </div>
         <h1 class="text-2xl font-bold tracking-tight text-blue-700 sm:text-[2rem]">ระบบควบคุมค่าใช้จ่าย</h1>
         <p class="mt-2 text-sm text-slate-500">เข้าสู่ระบบเพื่อใช้งาน</p>
@@ -81,23 +82,44 @@ async function handleSubmit() {
           {{ error }}
         </p>
 
-        <div class="flex items-center justify-between gap-3 pt-1 text-sm">
+        <div class="flex items-center justify-between gap-3 pt-2">
           <router-link
             :to="{ name: 'register' }"
-            class="inline-flex items-center justify-center rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 font-medium text-blue-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-100 hover:shadow-sm"
+            class="group relative flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-emerald-500/40 focus:outline-none focus:ring-4 focus:ring-emerald-200 active:translate-y-0"
           >
+            <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+            </svg>
             สมัครสมาชิก
           </router-link>
           <router-link
             :to="{ name: 'forgot-password' }"
-            class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 font-medium text-slate-600 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:bg-slate-100 hover:text-slate-800"
+            class="group relative flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-3 font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-amber-500/40 focus:outline-none focus:ring-4 focus:ring-amber-200 active:translate-y-0"
           >
+            <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.291-1.093.591h2.127v.001h7.171a1 1 0 001-1V9a1 1 0 00-1-1h-3.467c.529-1.403.701-2.907.671-3.734-.003-.052-.006-.10-.009-.157A6 6 0 0012 3c-3.59 0-6.761 2.646-7.331 6.093C4.63 9.36 4.4 10.21 4.4 11.5c0 1.891.771 3.644 2.02 4.904.24.254.521.495.84.708M16 17v2m0 0v2m0-2h2m-2 0h-2" />
+            </svg>
             ลืมรหัสผ่าน?
           </router-link>
         </div>
-        <div alian="center">
-<p class="mt-4 text-sm text-slate-500">เข้าแบบadmin user:admin password:admin1234 </p>
-</div>
+        <div class="mt-6 rounded-xl border border-blue-200/50 bg-gradient-to-br from-blue-50/80 to-indigo-50/80 p-4 backdrop-blur-sm">
+          <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 mt-0.5 text-blue-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zm-11-1a1 1 0 11-2 0 1 1 0 012 0zM8 7a1 1 0 000 2h6a1 1 0 000-2H8zm0 4a1 1 0 000 2h3a1 1 0 000-2H8z" clip-rule="evenodd" />
+            </svg>
+            <div class="flex-1">
+              <p class="text-xs font-bold text-blue-900 uppercase tracking-wide mb-2">💡 Demo Account</p>
+              <div class="space-y-1.5">
+                <p class="text-sm text-blue-800 font-semibold">
+                  <span class="font-mono bg-blue-100/60 px-2.5 py-1 rounded-lg text-blue-900">user: admin</span>
+                </p>
+                <p class="text-sm text-blue-800 font-semibold">
+                  <span class="font-mono bg-blue-100/60 px-2.5 py-1 rounded-lg text-blue-900">password: admin1234</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <button
           type="submit"
           :disabled="loading"

@@ -14,6 +14,7 @@ const routes = [
   { path: '/settings/budget-categories', name: 'budget-categories', component: () => import('../views/CategoryManageView.vue') },
   { path: '/budget-control', name: 'budget-control', component: () => import('../views/BudgetControlView.vue') },
   { path: '/reports', name: 'reports', component: () => import('../views/ReportHistoryView.vue') },
+  { path: '/admin', name: 'admin-panel', component: () => import('../views/AdminPanelView.vue'), meta: { adminOnly: true } },
 ];
 
 const router = createRouter({
@@ -22,6 +23,7 @@ const router = createRouter({
 });
 
 // Route guard: redirect ไปหน้า login หาก token หมดอายุ/ไม่มี
+// และป้องกัน admin-only routes จากผู้ใช้ที่ไม่ใช่ admin
 router.beforeEach(async (to) => {
   const auth = useAuthStore();
 
@@ -33,6 +35,12 @@ router.beforeEach(async (to) => {
       return { name: 'login', query: { redirect: to.fullPath } };
     }
   }
+
+  // ป้องกัน admin-only routes
+  if (to.meta.adminOnly && !auth.isAdmin) {
+    return { name: 'dashboard' };
+  }
+
   return true;
 });
 

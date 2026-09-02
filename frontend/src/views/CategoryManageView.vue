@@ -1,9 +1,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 import { useCategoryStore } from '../stores/category';
 
 const route = useRoute();
+const auth = useAuthStore();
 const store = useCategoryStore();
 
 const isBudget = computed(() => route.name === 'budget-categories');
@@ -87,8 +89,15 @@ onMounted(load);
       <div>
         <h1 class="text-2xl font-bold text-slate-800">{{ title }}</h1>
         <p class="text-sm text-slate-500 mt-0.5">{{ subtitle }}</p>
+        <p v-if="!auth.isAdmin" class="text-xs text-amber-600 mt-2">
+          💡 เฉพาะผู้ดูแลระบบเท่านั้นที่สามารถแก้ไขข้อมูลได้
+        </p>
       </div>
-      <button @click="showForm = !showForm; form = { id: null, name: '', code: '', unit: '', is_active: true }" class="btn-primary">
+      <button
+        v-if="auth.isAdmin"
+        @click="showForm = !showForm; form = { id: null, name: '', code: '', unit: '', is_active: true }"
+        class="btn-primary"
+      >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
@@ -97,7 +106,7 @@ onMounted(load);
     </div>
 
     <!-- Form -->
-    <form v-if="showForm" @submit.prevent="handleSubmit" class="card p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form v-if="showForm && auth.isAdmin" @submit.prevent="handleSubmit" class="card p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
       <p class="md:col-span-2 text-sm font-semibold text-slate-700">{{ form.id ? '✏️ แก้ไขรายการ' : '➕ เพิ่มรายการใหม่' }}</p>
       <div>
         <label class="form-label">ชื่อ <span class="text-red-500">*</span></label>
@@ -137,9 +146,13 @@ onMounted(load);
             </span>
           </div>
           <p class="text-xs text-slate-400 font-mono mt-0.5">{{ item.code }}<span v-if="item.unit"> · {{ item.unit }}</span></p>
-          <div class="flex gap-2 mt-3">
-            <button @click="editItem(item)" class="text-primary-600 hover:text-primary-800 text-xs font-semibold px-2.5 py-1 rounded-lg hover:bg-primary-50">แก้ไข</button>
-            <button @click="handleDelete(item.id)" class="text-red-500 hover:text-red-700 text-xs font-semibold px-2.5 py-1 rounded-lg hover:bg-red-50">ลบ</button>
+          <div v-if="auth.isAdmin" class="flex gap-2 mt-3">
+            <button @click="editItem(item)" class="text-primary-600 hover:text-primary-800 text-xs font-semibold px-2.5 py-1 rounded-lg hover:bg-primary-50">
+              แก้ไข
+            </button>
+            <button @click="handleDelete(item.id)" class="text-red-500 hover:text-red-700 text-xs font-semibold px-2.5 py-1 rounded-lg hover:bg-red-50">
+              ลบ
+            </button>
           </div>
         </div>
       </div>

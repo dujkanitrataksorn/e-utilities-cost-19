@@ -8,7 +8,12 @@ const defaultApiBaseUrl = (() => {
     return 'http://localhost:3000/api';
   }
 
-  return `http://${hostname}:30020/api`;
+  // สำหรับ Docker - frontend ที่ 30049 เชื่อมต่อ backend ที่ 30050
+  if (hostname === 'localhost' && port === '30049') {
+    return 'http://localhost:30050/api';
+  }
+
+  return `http://${hostname}:30050/api`;
 })();
 
 const api = axios.create({
